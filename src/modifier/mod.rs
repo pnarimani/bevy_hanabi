@@ -37,6 +37,7 @@ use std::{
     collections::hash_map::DefaultHasher,
     hash::{Hash, Hasher},
 };
+use bevy::prelude::IVec2;
 
 pub mod accel;
 pub mod attr;
@@ -466,6 +467,8 @@ pub struct RenderContext<'a> {
     pub render_extra: String,
     /// Texture modulating the particle color.
     pub particle_texture: Option<Handle<Image>>,
+    /// TextureSheet tiling
+    pub particle_texture_tiling: Option<IVec2>,
     /// Color gradients.
     pub gradients: HashMap<u64, Gradient<Vec4>>,
     /// Size gradients.
@@ -490,6 +493,7 @@ impl<'a> RenderContext<'a> {
             fragment_code: String::new(),
             render_extra: String::new(),
             particle_texture: None,
+            particle_texture_tiling: None,
             gradients: HashMap::new(),
             size_gradients: HashMap::new(),
             screen_space_size: false,

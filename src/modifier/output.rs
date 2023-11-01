@@ -33,6 +33,34 @@ impl RenderModifier for ParticleTextureModifier {
     }
 }
 
+/// A modifier modulating each particle's color by sampling a texture sheet.
+///
+/// # Attributes
+///
+/// This modifier does not require any specific particle attribute.
+#[derive(Default, Debug, Clone, PartialEq, Reflect, Serialize, Deserialize)]
+pub struct ParticleTextureSheetModifier {
+    /// The texture image to modulate the particle color with.
+    #[serde(skip)]
+    // TODO - Clarify if Modifier needs to be serializable, or we need another on-disk
+    // representation... NOTE - Need to keep a strong handle here, nothing else will keep that
+    // texture loaded currently.
+    pub texture: Handle<Image>,
+    /// the number of columns and rows
+    pub tiles: IVec2,
+}
+
+impl_mod_render!(ParticleTextureSheetModifier, &[]); // TODO - should require some UV maybe?
+
+#[typetag::serde]
+impl RenderModifier for ParticleTextureSheetModifier {
+    fn apply_render(&self, _module: &mut Module, context: &mut RenderContext) {
+        context.particle_texture = Some(self.texture.clone());
+        context.particle_texture_tiling = Some(self.tiles);
+    }
+}
+
+
 /// A modifier to set the rendering color of all particles.
 ///
 /// This modifier assigns a _single_ color to all particles. That color can be

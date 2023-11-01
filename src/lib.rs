@@ -626,6 +626,7 @@ struct EffectShaderSource {
     pub render: String,
     pub layout_flags: LayoutFlags,
     pub particle_texture: Option<Handle<Image>>,
+    pub particle_texture_tiling: Option<IVec2>,
     pub force_field: [ForceFieldSource; ForceFieldSource::MAX_SOURCES],
 }
 
@@ -837,6 +838,7 @@ impl EffectShaderSource {
             render_sim_space_transform_code,
             alpha_cutoff_code,
             particle_texture,
+            particle_texture_tiling,
             layout_flags,
         ) = {
             let mut render_context = RenderContext::new(&property_layout, &particle_layout);
@@ -890,6 +892,7 @@ impl EffectShaderSource {
                 render_sim_space_transform_code,
                 alpha_cutoff_code,
                 render_context.particle_texture,
+                render_context.particle_texture_tiling,
                 layout_flags,
             )
         };
@@ -977,6 +980,7 @@ impl EffectShaderSource {
             render: render_shader_source,
             layout_flags,
             particle_texture,
+            particle_texture_tiling,
             force_field,
         })
     }
@@ -1018,6 +1022,7 @@ pub struct CompiledParticleEffect {
     force_field: [ForceFieldSource; ForceFieldSource::MAX_SOURCES],
     /// Main particle texture.
     particle_texture: Option<Handle<Image>>,
+    particle_texture_tiling: Option<IVec2>,
     /// 2D layer for the effect instance.
     #[cfg(feature = "2d")]
     z_layer_2d: FloatOrd,
@@ -1034,6 +1039,7 @@ impl Default for CompiledParticleEffect {
             properties: vec![],
             force_field: default(),
             particle_texture: None,
+            particle_texture_tiling: None,
             #[cfg(feature = "2d")]
             z_layer_2d: FloatOrd(0.0),
             layout_flags: LayoutFlags::NONE,
@@ -1154,6 +1160,7 @@ impl CompiledParticleEffect {
 
         self.force_field = shader_source.force_field;
         self.particle_texture = shader_source.particle_texture;
+        self.particle_texture_tiling = shader_source.particle_texture_tiling;
     }
 
     /// Get the effect shader if configured, or `None` otherwise.

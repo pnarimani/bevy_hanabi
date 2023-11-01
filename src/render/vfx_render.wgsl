@@ -85,6 +85,8 @@ struct VertexOutput {
 #ifdef PARTICLE_TEXTURE
 @group(2) @binding(0) var particle_texture: texture_2d<f32>;
 @group(2) @binding(1) var particle_sampler: sampler;
+@group(2) @binding(2) var particle_texture_tiling: vec2<u32>;
+@group(2) @binding(3) var particle_texture_index: u32;
 #endif
 // #ifdef PARTICLE_GRADIENTS
 // @group(3) @binding(0) var gradient_texture: texture_2d<f32>;
@@ -251,7 +253,12 @@ fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
 {{FRAGMENT_MODIFIERS}}
 
 #ifdef PARTICLE_TEXTURE
-    var color = textureSample(particle_texture, particle_sampler, in.uv);
+    var particle_uv = in.uv / particle_texture_tiling;
+    var x = particle_texture_index % particle_texture_tiling.x;
+    var y = particle_texture_index / particle_texture_tiling.y;
+    particle_uv.x = particle_uv.x * x;
+    particle_uv.y = particle_uv.y * y;
+    var color = textureSample(particle_texture, particle_sampler, particle_uv);
     color = vec4<f32>(1.0, 1.0, 1.0, color.r); // FIXME - grayscale modulate
     color = in.color * color;
 #else
